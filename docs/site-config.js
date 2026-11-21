@@ -8,8 +8,8 @@ window.FORGE_CONFIG = {
   "monetization": {
     "adsenseClientId": "",
     "adsenseSlotId": "",
-    "supportUrl": "",
-    "supportLabel": "Support Each-Touch Forge",
+    "supportUrl": "https://each-touch.itch.io/sfx-forge/donate",
+    "supportLabel": "Support / Donate (USD)",
     "proStoreUrl": "",
     "affiliates": []
   }
