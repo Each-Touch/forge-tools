@@ -29,7 +29,7 @@ window.FORGE_CATALOG = [
       "Game Dev",
       "Zero AI"
     ],
-    "itchUrl": "",
+    "itchUrl": "https://each-touch.itch.io/sfx-forge",
     "status": "live",
     "launchedAt": "2026-11-21",
     "highlights": [

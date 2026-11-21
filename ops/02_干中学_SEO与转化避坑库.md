@@ -16,4 +16,12 @@
 
 ## 二、实盘沉淀日志
 
-- *待 2026-11-21 首轮上线实战后追加记录。*
+### 2026-11-21｜Flagship #1 `sfx-forge` 实战踩坑与固化规则
+1. **桌面 2 列预设按钮必须放宽列宽＋允许双行换行**：`266px` 左栏配 `white-space: nowrap; text-overflow: ellipsis` 会截断 `Explosion / Boom` 等 4 个标题；左栏放宽到 `304px` 且按钮文字改 `white-space: normal; line-height: 1.22` 后零截断。
+2. **深色暗面板静音文本对比度基线**：`#64748b` 在 `#19212c` 上低于 4:1，统一定位 `--text-muted: #8b9bb4` 兼顾层次与 WCAG 可读性；Scope Canvas 水印文字提高至 `rgba(186, 200, 218, 0.88)`。
+3. **移动端（`390×844`）必须把操作主舞台 `order: -1` 前置**：否则 12 预设 + 12 历史占满整整第一屏，用户看不到 Play 按钮和示波器。
+4. **零 404 内联 SVG Favicon**：GitHub Pages 默认无 `/favicon.ico` 会导致控制台报 1 个资源 404，在 `build_hub.py` 和所有子工具 `<head>` 内联 `<link rel="icon" href="data:image/svg+xml,...">` 可彻底清零。
+5. **`itch.io` 表单自动化三大硬经验**：
+   - 上传主 HTML ZIP 后 `itch.io` 会自动保存草稿并跳转至 `/game/edit/<id>`，需等文件行出现后再填后续项；
+   - `Add screenshots` 多选一次并发传图可能触发 `error_lightbox_widget`，建议单张顺序上传并等待 `.game_edit_form img` 数量递增；
+   - `Classification` / `Kind` 走 `.selectize-input >> nth=0/1` 展开下拉框点 `[data-value="tool"]` / `[data-value="html"]`；`Tags` 通过 `document.querySelector('input[name="game[tags]"]').selectize` 写入，避免盲点不可见 placeholder input；保存后底部会有两个 `button.save_btn`，编辑页二改需指定 `button.save_btn >> nth=1`。
