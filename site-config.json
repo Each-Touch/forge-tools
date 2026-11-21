@@ -1,0 +1,15 @@
+{
+  "brand": "Each-Touch Forge",
+  "tagline": "Free, Private, Zero-Upload Browser Tools for Indie Game Devs & Video Creators",
+  "baseUrl": "https://each-touch.github.io/forge-tools",
+  "arcadeUrl": "https://each-touch.github.io/",
+  "itchProfileUrl": "https://each-touch.itch.io/",
+  "monetization": {
+    "adsenseClientId": "",
+    "adsenseSlotId": "",
+    "supportUrl": "",
+    "supportLabel": "Support Each-Touch Forge",
+    "proStoreUrl": "",
+    "affiliates": []
+  }
+}

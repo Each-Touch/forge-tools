@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SFX Forge — Procedural Game &amp; UI Sound Effect Generator (CC0 WAV &amp; ZIP)</title>
+  <meta name="description" content="Free zero-AI procedural sound effect generator for indie game devs and video creators. Synthesize retro arcade &amp; modern UI SFX locally and export 16-bit 44.1kHz WAV or 12-SFX CC0 ZIP packs in 1 click." />
+  <link rel="canonical" href="https://each-touch.github.io/forge-tools/sfx-forge/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SFX Forge — Procedural Game &amp; UI Sound Generator" />
+  <meta property="og:description" content="100% browser-based DSP synth. Generate Coin, Jump, Laser, UI Click, Swoosh &amp; 8x variation CC0 ZIP packs with zero generative AI." />
+  <meta property="og:url" content="https://each-touch.github.io/forge-tools/sfx-forge/" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23f59e0b'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='monospace' font-weight='800' font-size='14' fill='%230b0f14'%3ESF%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../shared/theme.css" />
+  <link rel="stylesheet" href="./style.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SFX Forge",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Zero-AI procedural game and UI sound effect synthesizer running 100% client-side with 1-click 16-bit 44.1kHz WAV and CC0 ZIP pack export."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Are sounds exported from SFX Forge commercial-safe and CC0?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Every sound is synthesized deterministically on your device from pure mathematical waveforms and filters with zero generative AI or copyrighted samples. All exported WAVs and ZIP packs are released under CC0 1.0 Public Domain."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do my audio settings or files get uploaded to a server?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. SFX Forge runs 100% inside your browser using JavaScript PCM buffers and WebAudio, making it completely private and usable offline."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What audio format does SFX Forge export?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Uncompressed 16-bit PCM mono WAV at 44,100 Hz, compatible with Godot, Unity, Unreal, Premiere, DaVinci Resolve, and CapCut."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body data-forge-slug="sfx-forge">
+  <header class="forge-topbar">
+    <a class="forge-brand" href="../">
+      <span class="forge-logo-mark">SF</span>
+      <span>SFX Forge <span style="color: var(--text-muted); font-weight: 500;">· Each-Touch Forge</span></span>
+    </a>
+    <div class="forge-badges">
+      <span class="badge badge-green">CC0 Public Domain</span>
+      <span class="badge badge-cyan">Zero AI · Pure DSP</span>
+      <span class="badge badge-amber">44.1kHz 16-bit WAV</span>
+    </div>
+  </header>
+
+  <main class="sfx-shell">
+    <section class="studio-grid" aria-label="SFX Synthesizer Console">
+      <!-- Left Rail: Presets & History -->
+      <aside class="studio-card">
+        <div class="panel-head">
+          <span class="panel-title">Presets</span>
+          <div class="seg-tabs" role="tablist" aria-label="Preset Categories">
+            <button class="seg-tab active" type="button" data-cat-tab="all">All</button>
+            <button class="seg-tab" type="button" data-cat-tab="game">Game</button>
+            <button class="seg-tab" type="button" data-cat-tab="ui">UI</button>
+          </div>
+        </div>
+        <div class="preset-grid" id="preset-grid"></div>
+
+        <div class="panel-head" style="margin-top: 2px;">
+          <span class="panel-title">History (12)</span>
+          <button class="btn btn-sm" type="button" id="btn-undo">Undo</button>
+        </div>
+        <div class="history-list" id="history-list" aria-label="Sound History"></div>
+      </aside>
+
+      <!-- Center Stage: Scope, Transport & Batch Export -->
+      <section class="studio-card center-stage">
+        <div class="oled-frame">
+          <div class="oled-hud">
+            <span class="oled-name" id="hud-name">Coin / Pickup</span>
+            <div class="oled-metrics mono">
+              <span>DUR <strong id="hud-dur">0 ms</strong></span>
+              <span>PEAK <strong id="hud-peak">0.0 dBFS</strong></span>
+              <span>EST <strong id="hud-lufs">-14.0 LUFS</strong></span>
+              <span>SEED <strong id="hud-seed">#104729</strong></span>
+            </div>
+          </div>
+          <canvas id="scope-canvas" class="scope-canvas" aria-label="Waveform and Frequency Spectrum"></canvas>
+        </div>
+
+        <div class="transport-row">
+          <button class="btn btn-primary btn-play-main" type="button" id="btn-play">Play Sound (Space)</button>
+          <button class="btn" type="button" id="btn-mutate">Mutate (M)</button>
+          <button class="btn" type="button" id="btn-random">Randomize (R)</button>
+        </div>
+
+        <div class="transport-subrow">
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-autoplay" checked />
+            <span>Auto-play on edit</span>
+          </label>
+          <button class="btn btn-sm" type="button" id="btn-copy-json">Copy Preset JSON</button>
+        </div>
+
+        <div class="export-deck">
+          <div class="panel-head" style="padding-bottom: 4px;">
+            <span class="panel-title">1-Click CC0 Export</span>
+            <span class="mono" style="font-size: 11px; color: var(--text-muted);">16-bit PCM · Mono · 44.1kHz</span>
+          </div>
+          <div class="export-grid">
+            <button class="btn btn-cyan btn-full" type="button" id="btn-export-wav">Download .WAV (Single Sound)</button>
+            <button class="btn" type="button" id="btn-export-var-zip">Export 8 Variations (.zip)</button>
+            <button class="btn" type="button" id="btn-export-pack-zip">Export 12-SFX Starter Pack (.zip)</button>
+          </div>
+          <div class="status-strip mono" id="export-status" role="status" aria-live="polite">Ready — 100% local synthesis, zero uploads.</div>
+        </div>
+
+        <div class="shortcut-strip">
+          <span><span class="kbd">Space</span> Play</span>
+          <span><span class="kbd">M</span> Mutate 10%</span>
+          <span><span class="kbd">R</span> Randomize</span>
+          <span><span class="kbd">S</span> Save WAV</span>
+        </div>
+      </section>
+
+      <!-- Right Rack: Waveform & Synth Parameters -->
+      <aside class="studio-card rack-card">
+        <div class="panel-head">
+          <span class="panel-title">Synth Engine</span>
+          <div class="seg-tabs" role="tablist" aria-label="Parameter Sections">
+            <button class="seg-tab active" type="button" data-rack-tab="all">All</button>
+            <button class="seg-tab" type="button" data-rack-tab="envelope">Env</button>
+            <button class="seg-tab" type="button" data-rack-tab="pitch">Pitch</button>
+            <button class="seg-tab" type="button" data-rack-tab="tone">FX</button>
+          </div>
+        </div>
+        <div class="wave-pills" id="wave-pills" role="group" aria-label="Waveform"></div>
+        <div class="rack-scroll" id="param-rack"></div>
+      </aside>
+    </section>
+
+    <details class="seo-docs">
+      <summary>
+        <span>Documentation, CC0 License &amp; FAQ (Zero Generative AI)</span>
+        <span class="badge">Expand Guide</span>
+      </summary>
+      <div class="seo-docs-grid">
+        <article class="seo-block">
+          <h2>How to Use SFX Forge</h2>
+          <ul>
+            <li>Pick any <strong>Game</strong> or <strong>Modern UI</strong> preset on the left rail.</li>
+            <li>Press <strong>Mutate (M)</strong> for subtle organic variants so repeated hits or UI clicks never sound robotic.</li>
+            <li>Download a single <strong>.WAV</strong>, export <strong>8 Variations (.zip)</strong>, or grab the complete <strong>12-SFX Starter Pack (.zip)</strong> with manifest &amp; license inside.</li>
+          </ul>
+        </article>
+        <article class="seo-block">
+          <h2>CC0 Commercial License &amp; Zero AI</h2>
+          <p>Every waveform is synthesized live using deterministic oscillators, FM bells, envelopes, and state-variable filters in your browser. Zero neural models or third-party recordings are used.</p>
+          <p>All outputs are dedicated to the public domain (<strong>CC0 1.0</strong>) for indie games, YouTube, TikTok, and commercial software.</p>
+        </article>
+        <article class="seo-block">
+          <h2>Quick FAQ</h2>
+          <p><strong>Does anything upload to a server?</strong> No. Synthesis, WAV encoding, and ZIP archiving happen locally in memory.</p>
+          <p><strong>Engine compatibility?</strong> Exports standard uncompressed 44.1kHz 16-bit mono WAV ready for Godot, Unity, Unreal, CapCut, Premiere, and DaVinci Resolve.</p>
+        </article>
+      </div>
+    </details>
+  </main>
+
+  <footer id="forge-monetization-footer"></footer>
+
+  <script src="../site-config.js"></script>
+  <script src="../shared/monetization.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
